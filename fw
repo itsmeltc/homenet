@@ -1,0 +1,447 @@
+config system global
+    set admin-server-cert "fw-cert"
+    set admintimeout 60
+    set gui-certificates enable
+    set gui-theme melongene
+    set hostname "lorius-fw"
+    set timezone 26
+end
+config system interface
+    edit "wan1"
+        set vdom "root"
+        set mode dhcp
+        set allowaccess ping
+        set vlanforward enable
+        set type physical
+        set alias "inet"
+        set role wan
+        set snmp-index 2
+    next
+    edit "wan2"
+        set vdom "root"
+        set allowaccess ping
+        set vlanforward enable
+        set status down
+        set type physical
+        set snmp-index 3
+    next
+    edit "modem"
+        set vdom "root"
+        set mode pppoe
+        set vlanforward enable
+        set type physical
+        set snmp-index 4
+    next
+    edit "ssl.root"
+        set vdom "root"
+        set type tunnel
+        set alias "sslvpn tunnel interface"
+        set role lan
+        set snmp-index 5
+    next
+    edit "dmz"
+        set vdom "root"
+        set vlanforward enable
+        set status down
+        set type physical
+        set snmp-index 6
+    next
+    edit "internal"
+        set vdom "root"
+        set ip 192.168.1.99 255.255.255.0
+        set allowaccess ping https ssh snmp http
+        set vlanforward enable
+        set type hard-switch
+        set stp enable
+        set role lan
+        set snmp-index 1
+    next
+end
+config system physical-switch
+    edit "sw0"
+        set age-val 0
+    next
+end
+config system virtual-switch
+    edit "internal"
+        set physical-switch "sw0"
+        config port
+            edit "internal1"
+            next
+            edit "internal2"
+            next
+            edit "internal3"
+            next
+            edit "internal4"
+            next
+            edit "internal5"
+            next
+            edit "internal6"
+            next
+        end
+    next
+end
+config system password-policy
+    set status enable
+end
+config system admin
+    edit "admin"
+        set accprofile "super_admin"
+        set vdom "root"
+        config gui-dashboard
+            edit 1
+                set name "Main"
+                config widget
+                    edit 1
+                        set width 1
+                        set height 1
+                    next
+                    edit 6
+                        set type cpu-usage
+                        set x-pos 4
+                        set width 1
+                        set height 1
+                    next
+                    edit 7
+                        set type memory-usage
+                        set x-pos 5
+                        set width 1
+                        set height 1
+                    next
+                    edit 8
+                        set type sessions
+                        set x-pos 6
+                        set width 1
+                        set height 1
+                    next
+                    edit 2
+                        set type fortiview
+                        set x-pos 8
+                        set width 2
+                        set height 1
+                    next
+                    edit 3
+                        set type fortiview
+                        set x-pos 7
+                        set width 2
+                        set height 1
+                        set report-by destination
+                    next
+                    edit 4
+                        set type fortiview
+                        set x-pos 3
+                        set width 1
+                        set height 1
+                        set report-by vpn
+                        set sort-by "connections"
+                    next
+                    edit 9
+                        set type tr-history
+                        set x-pos 1
+                        set width 2
+                        set height 1
+                        set interface "wan1"
+                    next
+                    edit 5
+                        set type fortiview
+                        set x-pos 2
+                        set width 2
+                        set height 1
+                        set report-by country
+                        set visualization country
+                    next
+                end
+            next
+        end
+        set gui-vdom-menu-favorites "dashboard_1" "settings" "certification" "interface" "firewallpolicy" "sslvpn_monitor" "route_monitor" "sysdhcpdynamic"
+    next
+end
+config system dns
+    set primary 8.8.8.8
+    set secondary 8.8.4.4
+end
+config system snmp sysinfo
+    set status enable
+    set description "Firewall"
+end
+config system snmp community
+    edit 1
+        set name "public"
+        config hosts
+            edit 1
+            next
+        end
+    next
+end
+config system dhcp server
+    edit 1
+        set default-gateway 192.168.1.99
+        set netmask 255.255.255.0
+        set interface "internal"
+        config ip-range
+            edit 1
+                set start-ip 192.168.1.64
+                set end-ip 192.168.1.253
+            next
+        end
+        set timezone-option default
+        config reserved-address
+            edit 1
+                set ip 192.168.1.71
+                set mac a8:60:b6:0e:b8:fd
+                set description "srv-thincontroller"
+            next
+            edit 2
+                set ip 192.168.1.72
+                set mac b8:27:eb:3f:eb:72
+                set description "srv-hassio"
+            next
+            edit 3
+                set ip 192.168.1.73
+                set mac a4:2b:b0:18:4a:8f
+                set description "foyer-camera"
+            next
+            edit 4
+                set ip 192.168.1.74
+                set mac 00:62:ec:2b:bc:78
+                set description "livingroom-ap"
+            next
+            edit 5
+                set ip 192.168.1.75
+                set mac 3c:95:09:b6:4c:7f
+                set description "livingroom-tv"
+            next
+            edit 6
+                set ip 192.168.1.76
+                set mac 20:df:b9:35:12:52
+                set description "livingroom-googlehome"
+            next
+            edit 7
+                set ip 192.168.1.77
+                set mac 00:22:61:be:72:60
+                set description "kitchen-radio"
+            next
+            edit 8
+                set ip 192.168.1.78
+                set mac c4:9d:ed:41:ed:97
+                set description "livingroom-xbox"
+            next
+            edit 9
+                set ip 192.168.1.79
+                set mac 00:22:61:cb:ca:70
+                set description "bedroom-radio"
+            next
+            edit 10
+                set ip 192.168.1.80
+                set mac 20:df:b9:47:65:f0
+                set description "bedroom-googlehome"
+            next
+            edit 11
+                set ip 192.168.1.81
+                set mac 00:24:e4:37:9f:54
+                set description "bedroom-withings"
+            next
+            edit 12
+                set ip 192.168.1.200
+                set mac a4:34:d9:ef:e5:cf
+                set description "laptop-win"
+            next
+            edit 13
+                set ip 192.168.1.201
+                set mac f4:0f:24:22:4d:d4
+                set description "laptop-mac"
+            next
+            edit 14
+                set ip 192.168.1.202
+                set mac c8:3c:85:44:37:3d
+                set description "iphone"
+            next
+            edit 15
+                set ip 192.168.1.203
+                set mac 10:4e:89:6c:be:35
+                set description "watch-garmin"
+            next
+        end
+        set dns-server1 8.8.8.8
+    next
+end
+config firewall address
+    edit "all"
+    next
+    edit "ssl-vpn-ipv4-pool"
+        set type iprange
+        set start-ip 10.212.134.200
+        set end-ip 10.212.134.210
+    next
+    edit "none"
+        set subnet 0.0.0.0 255.255.255.255
+    next
+end
+config vpn certificate local
+    edit "ssl-vpn-cert"
+        set range global
+    next
+    edit "fw-cert"
+        set range global
+    next
+end
+config user local
+    edit "guest"
+        set status disable
+        set type password
+    next
+    edit "lee"
+        set type password
+    next
+end
+config user group
+    edit "Guest-group"
+        set member "guest"
+    next
+    edit "vpnusers"
+        set member "lee"
+    next
+end
+config user device
+    edit "Kitchen Radio"
+        set mac 00:22:61:be:72:60
+        set type media-streaming
+    next
+    edit "Bedroom Radio"
+        set mac 00:22:61:cb:ca:70
+        set type media-streaming
+    next
+    edit "Thin Controller"
+        set mac a8:60:b6:0e:b8:fd
+        set type mac
+    next
+    edit "Home Assistant"
+        set mac b8:27:eb:3f:eb:72
+        set type linux-pc
+    next
+    edit "Foyer Camera"
+        set mac a4:2b:b0:18:4a:8f
+        set type ip-phone
+    next
+    edit "Wireless Access Point"
+        set mac 00:62:ec:2b:bc:78
+        set type router-nat-device
+    next
+    edit "Living Room TV"
+        set mac 3c:95:09:b6:4c:7f
+        set type media-streaming
+    next
+    edit "Living Room Google Home"
+        set mac 20:df:b9:35:12:52
+        set type android-tablet
+    next
+    edit "Bedroom Google Home"
+        set mac 20:df:b9:47:65:f0
+        set type android-tablet
+    next
+    edit "Windows Laptop"
+        set mac a4:34:d9:ef:e5:cf
+        set type windows-pc
+    next
+    edit "Mac Laptop"
+        set mac f4:0f:24:22:4d:d4
+        set type mac
+    next
+    edit "iPhone"
+        set mac c8:3c:85:44:37:3d
+        set type iphone
+    next
+    edit "Garmin Watch"
+        set mac 10:4e:89:6c:be:35
+        set type media-streaming
+    next
+    edit "Bedroom Weighing Scales"
+        set mac 00:24:e4:37:9f:54
+        set type ip-phone
+    next
+    edit "Xbox One"
+        set mac c4:9d:ed:41:ed:97
+        set type gaming-console
+    next
+end
+config user device-group
+    edit "Kitchen"
+        set member "Kitchen Radio"
+    next
+    edit "Living Room"
+        set member "Living Room Google Home" "Living Room TV" "Wireless Access Point" "Xbox One"
+    next
+    edit "Foyer"
+        set member "Foyer Camera"
+    next
+    edit "Bedroom"
+        set member "Bedroom Google Home" "Bedroom Radio"  "Bedroom Weighing Scales"
+    next
+    edit "Servers"
+        set member "Home Assistant" "Thin Controller"
+    next
+    edit "Mobile Devices"
+        set member "Garmin Watch" "iPhone" "Mac Laptop" "Windows Laptop"
+    next
+end
+config vpn ssl web portal
+    edit "tunnel-access"
+        set tunnel-mode enable
+        set forticlient-download disable
+        set keep-alive enable
+        set save-password enable
+        set ip-pools "ssl-vpn-ipv4-pool"
+        set split-tunneling disable
+    next
+end
+config vpn ssl settings
+    set servercert "ssl-vpn-cert"
+    set tunnel-ip-pools "ssl-vpn-ipv4-pool"
+    set dns-server1 8.8.8.8
+    set dns-server2 8.8.4.4
+    set source-interface "wan1"
+    set source-address "all"
+    set source-address6 "all"
+    set default-portal "tunnel-access"
+end
+config vpn ssl web user-bookmark
+    edit "lee#vpnusers"
+    next
+end
+config firewall policy
+    edit 1
+        set srcintf "internal"
+        set dstintf "wan1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set nat enable
+    next
+    edit 2
+        set name "SSL VPN to LAN"
+        set srcintf "ssl.root"
+        set dstintf "internal"
+        set srcaddr "ssl-vpn-ipv4-pool"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set groups "vpnusers"
+        set comments "Allow SSL VPN to LAN"
+    next
+    edit 3
+        set name "SSL VPN to INET"
+        set srcintf "ssl.root"
+        set dstintf "wan1"
+        set srcaddr "ssl-vpn-ipv4-pool"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set groups "vpnusers"
+        set comments "Allow SSL VPN to internet"
+        set nat enable
+    next
+end
