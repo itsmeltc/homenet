@@ -26,6 +26,13 @@ dot11 ssid MyAzureDiamond
    guest-mode
    wpa-psk ascii hunter2
 !
+dot11 ssid MyAzureDiamond24
+   band-select
+   authentication open 
+   authentication key-management wpa version 2
+   guest-mode
+   wpa-psk ascii hunter2
+!
 !
 !
 no ipv6 cef
@@ -42,7 +49,7 @@ interface Dot11Radio0
  !        
  encryption mode ciphers aes-ccm 
  !
- ssid MyAzureDiamond
+ ssid MyAzureDiamond24
  !
  antenna gain 0
  stbc
